@@ -1,4 +1,9 @@
-from verbose import *
+try:
+    from tqdm import tqdm as progress
+except:
+    print("Please install tqdm for loading bar display")
+    def progress(range):
+        return range
 
 def write_list(f, list):
 

@@ -1,8 +1,13 @@
+# compatibility
+from __future__ import division
+from __future__ import print_function
+
+# standard
 import argparse
 from time import time
 import numpy as np
 
-from verbose import *
+# custom
 from IO import read_input, write_output
 from solution import *
 from score import compute_score
@@ -11,13 +16,6 @@ from score import compute_score
 parser = argparse.ArgumentParser(description='Test program.')
 parser.add_argument('input', help='path to input file', type=argparse.FileType("rt"))
 parser.add_argument('output', help='path to output file', type=argparse.FileType("wt"))
-parser.add_argument("-v", "--verbosity", type=int, choices=[0, 1, 2, 3],
-                    default=1,
-                    help="increase output verbosity,")
-# verbosity:    0 -> quiet
-#               1 -> warnings
-#               2 -> info
-#               3 -> debug
 
 args = parser.parse_args()
 
@@ -43,6 +41,7 @@ start = time()
 ###########################
 
 
+
 print("blbl")
 debug("je viens de print blbl")
 print("blbl")
@@ -53,14 +52,14 @@ print("blbl")
 fatal("boom !")
 print("blbl")
 info("this was a test")
+print("\n\n")
 
-
-for i in progress(range(10**7)):
+for i in progress(range(10**7), desc="computing"):
     pass
 
 output = np.array(input4) * 2
 
-    
+
       
 ###########################
 ## END OF STUFF
