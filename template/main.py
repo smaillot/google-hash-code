@@ -3,75 +3,65 @@ from __future__ import division
 from __future__ import print_function
 
 # standard
-import argparse
 from time import time
 import numpy as np
-
+import multiprocessing as mp 
+import random
+from tqdm import tqdm
 # custom
-from IO import read_input, write_output
-from solution import *
+from IO import read_input, write_output, parsing, print_score, disp_input
+from loaded_input import Loaded_input
+from solver import solve
 from score import compute_score
+from validation import check_solution
+from matplotlib.pylab import plt
+from post_process import improve_solution
 
-## parsing arguments
-parser = argparse.ArgumentParser(description='Test program.')
-parser.add_argument('input', help='path to input file', type=argparse.FileType("rt"))
-parser.add_argument('output', help='path to output file', type=argparse.FileType("wt"))
+if __name__ == '__main__':
 
-args = parser.parse_args()
+    # Parsing arguments
+    args = parsing()
+    number_tries = args.n
+    number_cpu = args.p
 
-## set verbosity level
-verbosity = args.verbosity
-set_verbosity(verbosity)
+    ''' This is where the fun begins'''
+    
+    # Loading input
+    loaded_input = Loaded_input(*read_input(args.input))
+    # Initiliasing seeds
+    random.seed(time())
+    seeds = [[random.random() for _ in range(len(loaded_input.all_possible_slices))] for _ in range(number_tries)]
+    
+    ###########################
+    ## Find best solution
+    ###########################
+    
+    start = time()
+    solution = solve(loaded_input, seeds, number_cpu)
+    end = time()
+    
+    ###########################
+    ## Post-treatment
+    ###########################
+    
+    # Improves the solution
+    solution = improve_solution(solution, loaded_input)
+ 
+    ###########################
+    ## Checks solution and writes it out
+    ###########################
 
-try:
-    print("\n")
-    info('Input file:' + str(args.input))
-    info('Output file:' + str(args.output))
-    print("\n")
-except IOError, msg:
-    parser.error(str(msg))
+
+    # Check if solution is valid
+    valid = check_solution(solution, loaded_input)
+    # display_slices(solution, R, C, pizza)
+
+    # Writing to output
+    write_output(args.output, solution)
+    # Compute score and display
+    score = compute_score(solution) * valid
+
+    print_score(score, loaded_input, end - start)
     
 
-input1, input2, input3, input4 = read_input(args.input)
-
-start = time()
-
-###########################
-## DO (GOOD) STUFF HERE
-###########################
-
-
-
-print("blbl")
-debug("je viens de print blbl")
-print("blbl")
-info("i'm so proud of myself")
-print("blbl")
-warn("legere fusion du reacteur, don't panic")
-print("blbl")
-fatal("boom !")
-print("blbl")
-info("this was a test")
-print("\n\n")
-
-for i in progress(range(10**7), desc="computing"):
-    pass
-
-output = np.array(input4) * 2
-
-
-      
-###########################
-## END OF STUFF
-###########################
-
-end = time()
-
-write_output(args.output, [1, 2, 3], output)
-
-## compute score
-score = compute_score(output)
-
-print("\n\n\n")
-info("Score {0:.0f} in {1:.6f}s".format(score, (end - start)))
-print("\n\n")
+    # plt.show()
