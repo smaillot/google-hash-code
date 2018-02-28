@@ -1,3 +1,4 @@
+from IO import *
 from solution import generate_solution
 
 class Loaded_input:

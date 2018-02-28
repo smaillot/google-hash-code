@@ -1,5 +1,5 @@
 import multiprocessing as mp
-from tqdm import tqdm
+from IO import *
 
 from score import compute_score
 
@@ -25,7 +25,7 @@ def solve(loaded_input, seeds, number_cpu):
     Change solution.worker to change the solution's generator behavior """
     # We screen through each CPU and dedicate one thread for each
     processes = [mp.Process(target=worker, args=(best_score, solution, lock, loaded_input, task_queue, done_queue)) for _ in range(number_cpu)]
-    progress_bar = tqdm(range(len(seeds)), desc = "Generating solutions")
+    progress_bar = progress(range(len(seeds)), desc = "Generating solutions")
     for p in processes:
         # Create a process that will race through the execution queue
         p.start()

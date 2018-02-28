@@ -5,6 +5,8 @@ from __future__ import print_function
 # custom
 from IO import *
 
-def compute_score(output):
-    
-    return len(output)
+def is_valid_solution(solution, inputs):
+
+    s = 0
+               
+    return s

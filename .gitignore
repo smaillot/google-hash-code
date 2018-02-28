@@ -1,7 +1,3 @@
-
 *.pyc
-./*.in
-./*.out
+./outputs/*.out
 ./.vscode
-
-\.vscode/

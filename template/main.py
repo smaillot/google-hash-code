@@ -5,32 +5,34 @@ from __future__ import print_function
 # standard
 from time import time
 import numpy as np
-import multiprocessing as mp 
-import random
-from tqdm import tqdm
+#import multiprocessing as mp 
+
 # custom
-from IO import read_input, write_output, parsing, print_score, disp_input
+from IO import *
 from loaded_input import Loaded_input
 from solver import solve
 from score import compute_score
-from validation import check_solution
-from matplotlib.pylab import plt
-from post_process import improve_solution
+from validation import is_valid_solution
+from pre_process import *
+from post_process import *
 
 if __name__ == '__main__':
 
     # Parsing arguments
     args = parsing()
-    number_tries = args.n
+    n_tries = args.n
     number_cpu = args.p
 
     ''' This is where the fun begins'''
     
     # Loading input
-    loaded_input = Loaded_input(*read_input(args.input))
-    # Initiliasing seeds
-    random.seed(time())
-    seeds = [[random.random() for _ in range(len(loaded_input.all_possible_slices))] for _ in range(number_tries)]
+    loaded_input = Loaded_input(read_input(args.input))
+
+    ###########################
+    ## Pre-processing
+    ###########################
+
+    seeds = init_seeds(compute_possibilities(loaded_input), n_tries)
     
     ###########################
     ## Find best solution
@@ -39,9 +41,10 @@ if __name__ == '__main__':
     start = time()
     solution = solve(loaded_input, seeds, number_cpu)
     end = time()
+    computing_time = end - start
     
     ###########################
-    ## Post-treatment
+    ## Post-processing
     ###########################
     
     # Improves the solution
@@ -51,17 +54,13 @@ if __name__ == '__main__':
     ## Checks solution and writes it out
     ###########################
 
-
     # Check if solution is valid
-    valid = check_solution(solution, loaded_input)
-    # display_slices(solution, R, C, pizza)
+    valid = is_valid_solution(solution, loaded_input)
+    display(solution, loaded_input)
 
-    # Writing to output
-    write_output(args.output, solution)
     # Compute score and display
     score = compute_score(solution) * valid
-
     print_score(score, loaded_input, end - start)
     
-
-    # plt.show()
+    # Writing to output
+    write_output(args.input, "algo1", score, solution)
